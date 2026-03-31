@@ -19,7 +19,6 @@
           # HTTP & scraping
           requests
           beautifulsoup4
-          feedparser
 
           # LLM
           openai
@@ -33,8 +32,6 @@
           # Config
           python-dotenv
 
-          # Dev
-          ipykernel
         ]);
 
       in {
@@ -45,29 +42,27 @@
             postgresql  # psql CLI for inspecting the DB
             docker
             docker-compose
+            stdenv.cc.cc.lib 
+            zlib
           ];
 
           # Runs automatically when you enter nix develop
           shellHook = ''
-              echo "🐍 Python: $(python --version)"
-              
-              # Create venv if it doesn't exist
-              if [ ! -d .venv ]; then
-                python -m venv .venv
-              fi
-              
-              # Activate it
-              source .venv/bin/activate
+          export LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib:$LD_LIBRARY_PATH
+          if [ ! -d .venv ]; then
+            python -m venv .venv
+          fi
+          source .venv/bin/activate
 
-              echo "📦 Installing packages not in nixpkgs..."
-              uv pip install \
-                markdownify \
-                youtube-transcript-api \
-                apscheduler \
-                httpx \
-                --quiet
-              echo "✅ Dev environment ready!"
-            '';
+          uv pip install \
+            markdownify \
+            feedparser\
+            youtube-transcript-api \
+            apscheduler \
+            httpx \
+            --quiet
+          echo "✅ Dev environment ready!"
+        '';
         };
       }
     );
