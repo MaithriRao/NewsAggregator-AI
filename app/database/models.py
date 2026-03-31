@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from sqlalchemy import Column, String, DateTime, Text
+from sqlalchemy import Column, String, DateTime, Text, Boolean
 from sqlalchemy.orm import declarative_base
 
 # Base class that all database table models must inherit from
@@ -54,3 +54,11 @@ class Digest(Base):
     title = Column(String, nullable=False)
     summary = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Tracks whether this digest item has been included in a sent email
+    # Prevents the same article appearing in multiple digest emails
+    email_sent = Column(Boolean, default=False)
+    
+    # Records exactly when this digest item was emailed
+    # Useful for debugging and audit trail
+    email_sent_at = Column(DateTime, nullable=True)
